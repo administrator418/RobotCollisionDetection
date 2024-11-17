@@ -10,7 +10,7 @@ from imblearn.over_sampling import SMOTE
 
 class Nav_Dataset(dataset.Dataset):
     def __init__(self):
-        load_data = np.genfromtxt('saved/training_data.csv', delimiter=',')
+        load_data = np.genfromtxt('saved/collect_data.csv', delimiter=',')
         X = load_data[:, :-1]
         y = load_data[:, -1]
 
@@ -32,6 +32,7 @@ class Nav_Dataset(dataset.Dataset):
         # normalize data and save scaler for inference
         scaler = MinMaxScaler()
         self.data = scaler.fit_transform(balanced_data) # fits and transforms
+        np.savetxt('saved/training_data.csv', self.data, delimiter=',', fmt='%.2f')
         pickle.dump(scaler, open("saved/scaler.pkl", "wb")) # save to normalize at inference
 
     def __len__(self):
