@@ -27,9 +27,9 @@ def train_model(no_epochs):
         train_bar = tqdm(data_loaders.train_loader)
         for data in train_bar: # sample['input'] and sample['label']
             inputs, labels = data['input'], data['label']
-            optimizer.zero_grad()
             output = model(inputs).squeeze()
             loss = config.loss_function(output, labels)
+            optimizer.zero_grad()
             loss.backward()
             optimizer.step()
 

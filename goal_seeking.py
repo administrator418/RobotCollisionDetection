@@ -1,6 +1,6 @@
 from SteeringBehaviors import Wander, Seek
 import SimulationEnvironment as sim
-from Networks_gru import Action_Conditioned_FF
+from Networks import Action_Conditioned_FF
 
 import pickle
 import numpy as np
@@ -48,7 +48,7 @@ def goal_seeking(goals_to_reach):
         for action in action_space:
             network_param = get_network_param(sim_env, action, scaler)
             prediction = model(network_param)
-            if prediction.item() < .1:
+            if prediction.item() < .13:
                 actions_available.append(action)
 
         if len(actions_available) == 0:
