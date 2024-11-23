@@ -9,7 +9,7 @@ import logging
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s-%(levelname)s-%(message)s',
-                    handlers=[logging.StreamHandler(), logging.FileHandler('saved/train_model.log')])
+                    handlers=[logging.StreamHandler(), logging.FileHandler('RobotCollisionDetection/saved/train_model.log')])
 
 class Config:
     batch_size = 64
@@ -57,8 +57,8 @@ def train_model(no_epochs):
             test_losses.append(test_loss)
 
             if test_loss < min_loss:
-                torch.save(model.state_dict(), 'saved/saved_model.pkl')
-                with open('saved/bast_threshold.txt', 'w') as file:
+                torch.save(model.state_dict(), 'RobotCollisionDetection/saved/saved_model.pkl')
+                with open('RobotCollisionDetection/saved/bast_threshold.txt', 'w') as file:
                     file.write(str(model.threshold))
                 min_loss = test_loss
 
@@ -81,7 +81,7 @@ def train_model(no_epochs):
     plt.ylabel('Loss')
     plt.legend()
     plt.grid(True)
-    image_path = 'saved/loss.png'
+    image_path = 'RobotCollisionDetection/saved/loss.png'
     plt.savefig(image_path)
     plt.show()
     logging.info(f'Loss image saved to {image_path}')

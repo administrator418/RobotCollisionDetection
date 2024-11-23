@@ -11,9 +11,9 @@ from imblearn.under_sampling import RandomUnderSampler
 
 class Nav_Dataset(dataset.Dataset):
     def __init__(self):
-        with FileLock('saved/collect_data.npy.lock'):
-            load_data = np.load('saved/collect_data.npy')
-        np.savetxt('saved/collect_data.csv', load_data, delimiter=',', fmt='%.2f')
+        with FileLock('RobotCollisionDetection/saved/collect_data.npy.lock'):
+            load_data = np.load('RobotCollisionDetection/saved/collect_data.npy')
+        np.savetxt('RobotCollisionDetection/saved/collect_data.csv', load_data, delimiter=',', fmt='%.2f')
         X = load_data[:, :-1]
         y = load_data[:, -1]
 
@@ -26,9 +26,9 @@ class Nav_Dataset(dataset.Dataset):
 
         # normalize data and save scaler for inference
         scaler = MinMaxScaler()
-        pickle.dump(scaler, open("saved/scaler.pkl", "wb"))  # save to normalize at inference
+        pickle.dump(scaler, open("RobotCollisionDetection/saved/scaler.pkl", "wb"))  # save to normalize at inference
         self.data = scaler.fit_transform(balanced_data) # fits and transforms
-        np.savetxt('saved/training_data.csv', self.data, delimiter=',', fmt='%.2f')
+        np.savetxt('RobotCollisionDetection/saved/training_data.csv', self.data, delimiter=',', fmt='%.2f')
 
     def __len__(self):
         return len(self.data)
