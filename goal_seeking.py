@@ -28,14 +28,13 @@ def goal_seeking(goals_to_reach):
     model.eval()
 
     #load normalization parameters
-    scaler = pickle.load( open("saved/scaler.pkl", "rb"))
+    scaler = pickle.load(open("saved/scaler.pkl", "rb"))
 
     accurate_predictions, false_positives, missed_collisions = 0, 0, 0
     robot_turned_around = False
     actions_checked = []
     goals_reached = 0
     while goals_reached < goals_to_reach:
-
         seek_vector = sim_env.goal_body.position - sim_env.robot.body.position
         if la.norm(seek_vector) < 50:
             sim_env.move_goal()
@@ -48,7 +47,7 @@ def goal_seeking(goals_to_reach):
         for action in action_space:
             network_param = get_network_param(sim_env, action, scaler)
             prediction = model(network_param)
-            if prediction.item() < .13:
+            if prediction.item() < .25:
                 actions_available.append(action)
 
         if len(actions_available) == 0:

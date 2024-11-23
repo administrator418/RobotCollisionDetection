@@ -2,6 +2,8 @@ from SteeringBehaviors import Wander
 import SimulationEnvironment as sim
 
 import numpy as np
+import os
+from filelock import FileLock
 
 def collect_training_data(total_actions):
     # set-up environment
@@ -11,15 +13,30 @@ def collect_training_data(total_actions):
     action_repeat = 100
     steering_behavior = Wander(action_repeat)
 
-    num_params = 7
-    # network_params will be used to store your training data
-    # a single sample will be comprised of: sensor_readings, action, collision
-    network_params = np.zeros((total_actions, num_params))
+    path = 'saved/collect_data.npy'
+    lock_path = 'saved/collect_data.npy.lock'
 
-    for action_i in range(total_actions):
-        #steering_force is used for robot control only
+    while True:
+        # network_params will be used to store your training data
+        # a single sample will be composed of: sensor_readings, action, collision
+        network_params = []
+
+        # To ensure multithreaded data collection
+        if os.path.exists(path):
+            with FileLock(lock_path):
+                load_data = np.load(path)
+            network_params.extend(load_data.tolist())
+            action_i = len(load_data)
+            if action_i >= total_actions:
+                break
+        else:
+            action_i = 0
+
+        # steering_force is used for robot control only
         action, steering_force = steering_behavior.get_action(action_i, sim_env.robot.body.angle)
 
+        sensor_readings = None
+        collision = None
         for action_timestep in range(action_repeat):
             if action_timestep == 0:
                 _, collision, sensor_readings = sim_env.step(steering_force)
@@ -30,17 +47,16 @@ def collect_training_data(total_actions):
                 steering_behavior.reset_action()
                 # this statement only EDITS collision of PREVIOUS action
                 # if current action is very new.
-                if action_timestep < action_repeat * .3: # in case prior action caused collision
-                    network_params[action_i, -1] = collision # share collision result with prior action
+                if action_timestep < action_repeat * .3 and action_i > 0: # in case prior action caused collision
+                    network_params[-2][-1] = collision # share collision result with prior action
                 break
 
         # Update network_params.
-        network_params[action_i] = np.concatenate([sensor_readings, [action, int(collision)]])
+        network_params.append(sensor_readings.tolist() + [action, int(collision)])
+        new_data = np.array(network_params)
 
-    # Save .csv file
-    np.savetxt("saved/collect_data.csv", network_params, delimiter=",", fmt='%d')
-
+        with FileLock(lock_path):
+            np.save(path, new_data)
 
 if __name__ == '__main__':
-    total_actions = 1000
-    collect_training_data(total_actions)
+    collect_training_data(total_actions=50000)

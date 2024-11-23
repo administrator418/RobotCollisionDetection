@@ -3,53 +3,88 @@ from Networks import Action_Conditioned_FF
 
 import torch
 import torch.nn as nn
+import torch_optimizer as optim
 import matplotlib.pyplot as plt
-from tqdm import tqdm
+import logging
 
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s-%(levelname)s-%(message)s',
+                    handlers=[logging.StreamHandler(), logging.FileHandler('saved/train_model.log')])
 
 class Config:
-    batch_size = 50
-    no_epochs = 50
+    batch_size = 64
+    no_epochs = 1000
     loss_function = nn.BCELoss()
     lr = 1e-3
+    weight_decay = 1e-3
+    k = 5
+    alpha = 0.5
+    ls_patience = 7
+    ls_factor = 0.1
 
 def train_model(no_epochs):
-    data_loaders = Data_Loaders(config.batch_size)
+    data_loader = Data_Loaders()
     model = Action_Conditioned_FF()
 
-    optimizer = torch.optim.Adam(model.parameters(), lr=config.lr)
+    base_optimizer = optim.AdamP(model.parameters(), lr=config.lr, weight_decay=config.weight_decay)
+    optimizer = optim.Lookahead(base_optimizer, k=config.k, alpha=config.alpha)
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+        optimizer, mode='min', factor=config.ls_factor, patience=config.ls_patience
+    )
 
-    losses = []
-    min_loss = model.evaluate(model, data_loaders.test_loader, config.loss_function)
+    train_losses = []
+    test_losses = []
+    min_loss, _, _, _ = model.evaluate(model, data_loader, config.loss_function, config.batch_size)
 
     for epoch_i in range(no_epochs):
         model.train()
-        train_bar = tqdm(data_loaders.train_loader)
-        for data in train_bar: # sample['input'] and sample['label']
+        total_loss = 0.0
+        for data in data_loader.get_train_data(config.batch_size): # sample['input'] and sample['label']
             inputs, labels = data['input'], data['label']
-            output = model(inputs).squeeze()
-            loss = config.loss_function(output, labels)
+            outputs = model(inputs)
+            loss = config.loss_function(outputs, labels)
+            total_loss += loss.item() * len(outputs)
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
 
-            train_bar.desc = "train epoch[{}/{}] loss:{:.3f}".format(epoch_i + 1,
-                                                                    no_epochs,
-                                                                    loss)
+        test_loss, fn, fp, f1 = model.evaluate(model, data_loader, config.loss_function, config.batch_size)
+        scheduler.step(test_loss)
 
-        losses.append(model.evaluate(model, data_loaders.test_loader, config.loss_function))
-        if losses[-1] < min_loss:
-            torch.save(model.state_dict(), 'saved/saved_model.pkl')
-            min_loss = losses[-1]
+        if epoch_i % 10 == 0:
+            avg_loss = total_loss / len(data_loader.train_subset)
+            train_losses.append(avg_loss)
+            test_losses.append(test_loss)
+
+            if test_loss < min_loss:
+                torch.save(model.state_dict(), 'saved/saved_model.pkl')
+                with open('saved/bast_threshold.txt', 'w') as file:
+                    file.write(str(model.threshold))
+                min_loss = test_loss
+
+            logging.info(
+                f'Epoch: {epoch_i + 1}, '
+                f'train loss: {avg_loss:.3f}, '
+                f'test loss: {test_loss:.3f}')
+            logging.info(
+                f'Threshold: {model.threshold:.3f}, '
+                f'F1 Score: {f1:.3f}, '
+                f'False Negative: {fn}/{len(data_loader.test_subset)}, '
+                f'False Positive: {fp}/{len(data_loader.test_subset)}'
+            )
 
     plt.figure(figsize=(10, 6))
-    plt.plot(range(1, no_epochs + 1), losses, marker='o', color='b', label='Train Loss')
-    plt.title('Training Loss Over Epochs')
+    plt.plot(range(1, no_epochs + 1), train_losses, marker='o', color='b', label='train loss')
+    plt.plot(range(1, no_epochs + 1), test_losses, marker='o', color='r', label='test loss')
+    plt.title('Loss Over Epochs')
     plt.xlabel('Epoch')
     plt.ylabel('Loss')
     plt.legend()
     plt.grid(True)
+    image_path = 'saved/loss.png'
+    plt.savefig(image_path)
     plt.show()
+    logging.info(f'Loss image saved to {image_path}')
 
 if __name__ == '__main__':
     config = Config()
