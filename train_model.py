@@ -15,6 +15,7 @@ class Config:
     batch_size = 64
     no_epochs = 1000
     loss_function = nn.BCELoss()
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     lr = 1e-3
     weight_decay = 1e-3
     k = 5
@@ -40,7 +41,7 @@ def train_model(no_epochs):
         model.train()
         total_loss = 0.0
         for data in data_loader.get_train_data(config.batch_size): # sample['input'] and sample['label']
-            inputs, labels = data['input'], data['label']
+            inputs, labels = data['input'].to(config.device), data['label'].to(config.device)
             outputs = model(inputs)
             loss = config.loss_function(outputs, labels)
             total_loss += loss.item() * len(outputs)

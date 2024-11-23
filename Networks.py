@@ -13,6 +13,7 @@ class Action_Conditioned_FF(nn.Module):
         self.num_layers = 3
         self.output_size = 1
         self.threshold = 0.25
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
         self.gru = nn.GRU(self.input_size, self.hidden_size, self.num_layers, batch_first=True)
         self.dropout = nn.Dropout(p=0.5)
@@ -20,6 +21,8 @@ class Action_Conditioned_FF(nn.Module):
         self.sigmoid = nn.Sigmoid()
 
         self.apply(self.xavier_init) # use xavier initialization
+
+        self.to(self.device)
 
     def xavier_init(self, m):
         if isinstance(m, nn.GRU):
@@ -57,7 +60,7 @@ class Action_Conditioned_FF(nn.Module):
         model.eval()
         with torch.no_grad():
             for data in data_loader.get_test_data(batch_size):
-                inputs, labels = data['input'], data['label']
+                inputs, labels = data['input'].to(self.device), data['label'].to(self.device)
                 outputs = model(inputs)
                 all_outputs.append(outputs)
                 all_labels.append(labels)
