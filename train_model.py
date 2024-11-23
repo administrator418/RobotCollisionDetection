@@ -11,10 +11,30 @@ logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s-%(levelname)s-%(message)s',
                     handlers=[logging.StreamHandler(), logging.FileHandler('RobotCollisionDetection/saved/train_model.log')])
 
+class SoftF1Loss(nn.Module):
+    def forward(self, predictions, targets):
+        TP = (predictions * targets).sum(dim=0)
+        FP = ((1 - targets) * predictions).sum(dim=0)
+        FN = (targets * (1 - predictions)).sum(dim=0)
+        f1 = 2 * TP / (2 * TP + FP + FN + 1e-6)
+        return 1 - f1.mean()
+
+class CombinedLoss(nn.Module):
+    def __init__(self, alpha=0.5):
+        super(CombinedLoss, self).__init__()
+        self.alpha = alpha
+        self.bce_loss = nn.BCELoss()
+        self.soft_f1_loss = SoftF1Loss()
+
+    def forward(self, predictions, targets):
+        bce = self.bce_loss(predictions, targets)
+        f1 = self.soft_f1_loss(predictions, targets)
+        return self.alpha * bce + (1 - self.alpha) * f1
+
 class Config:
     batch_size = 64
     no_epochs = 1000
-    loss_function = nn.BCELoss()
+    loss_function = CombinedLoss(alpha=0.5)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     lr = 1e-3
     weight_decay = 1e-5
