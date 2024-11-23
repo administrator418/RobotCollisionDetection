@@ -25,7 +25,7 @@ class Nav_Dataset(dataset.Dataset):
         np.random.shuffle(balanced_data)
 
         # normalize data and save scaler for inference
-        scaler = StandardScaler()
+        scaler = MinMaxScaler()
         pickle.dump(scaler, open("RobotCollisionDetection/saved/scaler.pkl", "wb"))  # save to normalize at inference
         self.data = scaler.fit_transform(balanced_data) # fits and transforms
         np.savetxt('RobotCollisionDetection/saved/training_data.csv', self.data, delimiter=',', fmt='%.2f')
