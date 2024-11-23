@@ -33,7 +33,7 @@ class CombinedLoss(nn.Module):
 
 class Config:
     batch_size = 64
-    no_epochs = 201
+    no_epochs = 1000
     loss_function = CombinedLoss(alpha=0.5)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     lr = 1e-3
