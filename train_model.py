@@ -71,6 +71,16 @@ def train_model(no_epochs):
                 f'Threshold: {model.threshold:.3f}, '
                 f'F1 Score: {f1:.3f}, '
                 f'False Negative: {fn}/{len(data_loader.test_subset)}, '
+                f'False Positive: {fp}/{len(data_loader.test_subset)}')
+            
+            print(
+                f'Epoch: {epoch_i + 1}, '
+                f'train loss: {avg_loss:.3f}, '
+                f'test loss: {test_loss:.3f}')
+            print(
+                f'Threshold: {model.threshold:.3f}, '
+                f'F1 Score: {f1:.3f}, '
+                f'False Negative: {fn}/{len(data_loader.test_subset)}, '
                 f'False Positive: {fp}/{len(data_loader.test_subset)}'
             )
 
