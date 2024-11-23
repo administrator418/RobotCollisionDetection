@@ -38,3 +38,46 @@ Epoch: 181, train loss: 0.140, test loss: 0.137
 Threshold: 0.564, F1 Score: 0.913, False Negative: 95/4788, False Positive: 184/4788
 Epoch: 191, train loss: 0.139, test loss: 0.137
 Threshold: 0.446, F1 Score: 0.914, False Negative: 123/4788, False Positive: 156/4788
+0.7 SoftF1Loss
+Epoch: 1, train loss: 0.307, test loss: 0.223
+Threshold: 0.665, F1 Score: 0.850, False Negative: 269/4788, False Positive: 214/4788
+Epoch: 11, train loss: 0.184, test loss: 0.187
+Threshold: 0.326, F1 Score: 0.876, False Negative: 156/4788, False Positive: 229/4788
+Epoch: 21, train loss: 0.176, test loss: 0.176
+Threshold: 0.252, F1 Score: 0.881, False Negative: 191/4788, False Positive: 188/4788
+Epoch: 31, train loss: 0.170, test loss: 0.169
+Threshold: 0.453, F1 Score: 0.890, False Negative: 147/4788, False Positive: 198/4788
+Epoch: 41, train loss: 0.165, test loss: 0.158
+Threshold: 0.490, F1 Score: 0.892, False Negative: 135/4788, False Positive: 200/4788
+Epoch: 51, train loss: 0.160, test loss: 0.156
+Threshold: 0.635, F1 Score: 0.898, False Negative: 119/4788, False Positive: 198/4788
+Epoch: 61, train loss: 0.159, test loss: 0.166
+Threshold: 0.145, F1 Score: 0.886, False Negative: 134/4788, False Positive: 217/4788
+Epoch: 71, train loss: 0.156, test loss: 0.153
+Threshold: 0.636, F1 Score: 0.900, False Negative: 107/4788, False Positive: 201/4788
+Epoch: 81, train loss: 0.154, test loss: 0.153
+Threshold: 0.434, F1 Score: 0.894, False Negative: 105/4788, False Positive: 220/4788
+Epoch: 91, train loss: 0.145, test loss: 0.146
+Threshold: 0.243, F1 Score: 0.902, False Negative: 127/4788, False Positive: 180/4788
+Epoch: 101, train loss: 0.144, test loss: 0.144
+Threshold: 0.597, F1 Score: 0.904, False Negative: 102/4788, False Positive: 194/4788
+Epoch: 111, train loss: 0.144, test loss: 0.142
+Threshold: 0.382, F1 Score: 0.905, False Negative: 97/4788, False Positive: 196/4788
+Epoch: 121, train loss: 0.144, test loss: 0.145
+Threshold: 0.590, F1 Score: 0.903, False Negative: 113/4788, False Positive: 188/4788
+Epoch: 131, train loss: 0.138, test loss: 0.140
+Threshold: 0.506, F1 Score: 0.905, False Negative: 92/4788, False Positive: 199/4788
+Epoch: 141, train loss: 0.137, test loss: 0.142
+Threshold: 0.850, F1 Score: 0.907, False Negative: 84/4788, False Positive: 200/4788
+Epoch: 151, train loss: 0.138, test loss: 0.140
+Threshold: 0.597, F1 Score: 0.906, False Negative: 97/4788, False Positive: 193/4788
+Epoch: 161, train loss: 0.135, test loss: 0.138
+Threshold: 0.712, F1 Score: 0.906, False Negative: 93/4788, False Positive: 195/4788
+Epoch: 171, train loss: 0.135, test loss: 0.139
+Threshold: 0.762, F1 Score: 0.906, False Negative: 87/4788, False Positive: 202/4788
+Epoch: 181, train loss: 0.134, test loss: 0.138
+Threshold: 0.584, F1 Score: 0.907, False Negative: 93/4788, False Positive: 192/4788
+Epoch: 191, train loss: 0.134, test loss: 0.138
+Threshold: 0.592, F1 Score: 0.908, False Negative: 92/4788, False Positive: 191/4788
+Epoch: 201, train loss: 0.133, test loss: 0.136
+Threshold: 0.764, F1 Score: 0.907, False Negative: 77/4788, False Positive: 206/4788
