@@ -17,11 +17,12 @@ class Config:
     loss_function = nn.BCELoss()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     lr = 1e-3
-    weight_decay = 1e-3
-    k = 5
-    alpha = 0.5
-    ls_patience = 7
-    ls_factor = 0.1
+    weight_decay = 1e-5
+    k = 10
+    alpha = 0.75
+    ls_patience = 10
+    ls_factor = 0.5
+    min_lr = 1e-6
 
 def train_model(no_epochs):
     data_loader = Data_Loaders()
@@ -30,7 +31,7 @@ def train_model(no_epochs):
     base_optimizer = optim.AdamP(model.parameters(), lr=config.lr, weight_decay=config.weight_decay)
     optimizer = optim.Lookahead(base_optimizer, k=config.k, alpha=config.alpha)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-        optimizer, mode='min', factor=config.ls_factor, patience=config.ls_patience
+        optimizer, mode='min', factor=config.ls_factor, patience=config.ls_patience, min_lr=config.min_lr
     )
 
     train_losses = []

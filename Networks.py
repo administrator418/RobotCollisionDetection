@@ -9,14 +9,15 @@ class Action_Conditioned_FF(nn.Module):
         super(Action_Conditioned_FF, self).__init__()
 
         self.input_size = 6
-        self.hidden_size = 256
-        self.num_layers = 3
+        self.num_layers = 5
+        self.p = 0.3
+        self.hidden_size = 512
         self.output_size = 1
         self.threshold = 0.25
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
         self.gru = nn.GRU(self.input_size, self.hidden_size, self.num_layers, batch_first=True)
-        self.dropout = nn.Dropout(p=0.5)
+        self.dropout = nn.Dropout(self.p)
         self.fc = nn.Linear(self.hidden_size, self.output_size)
         self.sigmoid = nn.Sigmoid()
 
